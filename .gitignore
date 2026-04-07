@@ -10,6 +10,8 @@ node_modules
 
 # Environment variables
 .env
+.env.*
+!.env.example
 
 # IDEs and editors
 /.idea
@@ -37,6 +39,16 @@ yarn-error.log
 testem.log
 /typings
 
+# Logs
+*.log
+
+# Test artifacts
+playwright-report/
+blob-report/
+
+# Local env/tooling
+.vercel
+
 # System Files
 .DS_Store
 Thumbs.db
@@ -45,3 +57,6 @@ Thumbs.db
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+vite.config.*.timestamp*
+test-output
