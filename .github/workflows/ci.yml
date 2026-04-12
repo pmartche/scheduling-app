@@ -23,6 +23,7 @@ jobs:
 
       - run: npm ci
 
+      - run: npx prisma generate --schema api-gateway/prisma/schema.prisma
       - run: npx nx format:check  --base="remotes/origin/main"
       - run: npx nx run-many -t lint test build typecheck --all
       - run: npx playwright install --with-deps
