@@ -18,6 +18,15 @@
     },
     {
       "path": "./api-gateway"
+    },
+    {
+      "path": "./libs/shared-auth"
+    },
+    {
+      "path": "./libs/shared-config"
+    },
+    {
+      "path": "./libs/shared-types"
     }
   ]
 }
