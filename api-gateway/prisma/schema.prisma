@@ -14,22 +14,41 @@ model Business {
 }
 
 model Location {
-  id         String   @id @default(uuid())
-  businessId String
-  business   Business @relation(fields: [businessId], references: [id])
-  name       String
-  email      String
-  address    String
-  city       String
-  postalCode String
-  country    String
+  id                  String               @id @default(uuid())
+  businessId          String
+  business            Business             @relation(fields: [businessId], references: [id])
+  name                String
+  email               String
+  address             String
+  city                String
+  postalCode          String
+  country             String
+  locationMemberships LocationMembership[]
 
   @@unique([businessId, name])
 }
 
 model Customer {
-  id        String @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String @unique
+  id                  String               @id @default(uuid())
+  firstName           String
+  lastName            String
+  email               String               @unique
+  locationMemberships LocationMembership[]
+}
+
+model LocationMembership {
+  id           String        @id @default(uuid())
+  locationId   String
+  location     Location      @relation(fields: [locationId], references: [id])
+  customerId   String
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  appointments Appointment[]
+}
+
+model Appointment {
+  id                   String             @id @default(uuid())
+  locationMembershipId String
+  locationMembership   LocationMembership @relation(fields: [locationMembershipId], references: [id])
+  startTime            DateTime
+  endTime              DateTime
 }

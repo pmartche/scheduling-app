@@ -23,12 +23,12 @@ describe('AuthModule (e2e)', () => {
     prisma = app.get(PrismaService);
 
     // Clean up the test database before tests
-    await prisma.user.deleteMany();
+    await prisma.customer.deleteMany();
   });
 
   afterAll(async () => {
     // Optionally clean up after tests
-    await prisma.user.deleteMany();
+    await prisma.customer.deleteMany();
     await app.close();
   });
 
@@ -56,7 +56,7 @@ describe('AuthModule (e2e)', () => {
     expect(res.body.email).toBe(email);
 
     // Confirm user exists in database
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.customer.findUnique({ where: { email } });
     expect(user).toBeTruthy();
   });
 
