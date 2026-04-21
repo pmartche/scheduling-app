@@ -9,14 +9,14 @@ datasource db {
 
 model Business {
   id        String     @id @default(uuid())
-  name      String
+  name      String     @unique
   locations Location[]
 }
 
 model Location {
   id                  String               @id @default(uuid())
   businessId          String
-  business            Business             @relation(fields: [businessId], references: [id])
+  business            Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
   name                String
   email               String
   address             String
@@ -39,16 +39,16 @@ model Customer {
 model LocationMembership {
   id           String        @id @default(uuid())
   locationId   String
-  location     Location      @relation(fields: [locationId], references: [id])
+  location     Location      @relation(fields: [locationId], references: [id], onDelete: Cascade)
   customerId   String
-  customer     Customer      @relation(fields: [customerId], references: [id])
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
   appointments Appointment[]
 }
 
 model Appointment {
   id                   String             @id @default(uuid())
   locationMembershipId String
-  locationMembership   LocationMembership @relation(fields: [locationMembershipId], references: [id])
+  locationMembership   LocationMembership @relation(fields: [locationMembershipId], references: [id], onDelete: Cascade)
   startTime            DateTime
   endTime              DateTime
 }
