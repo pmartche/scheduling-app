@@ -66,7 +66,8 @@
     "jsonc-eslint-parser": "^2.1.0",
     "lint-staged": "^16.4.0",
     "nx": "22.3.3",
-    "prettier": "^2.6.2",
+    "prettier": "^3.8.3",
+    "prisma": "^6.19.2",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.1",
@@ -79,12 +80,10 @@
   },
   "workspaces": [
     "packages/*",
+    "libs/*",
     "web",
     "api-gateway",
-    "api-gateway-e2e",
-    "shared-types",
-    "shared-config",
-    "shared-auth"
+    "api-gateway-e2e"
   ],
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -99,7 +98,6 @@
     "class-validator": "^0.15.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "prisma": "^6.19.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "6.29.0",
