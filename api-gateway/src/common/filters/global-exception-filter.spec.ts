@@ -7,7 +7,7 @@ import {
 } from '@scheduling-app/shared-config';
 
 const baseTestCondition =
-  'replies with response object, response body, and status code';
+  'replies with response object and body, and status code';
 const testCondition1 = 'exception is HttpException';
 const testCondition1Result = 'gets the status code from the exception arg';
 const testCondition1SubCondition1 =
