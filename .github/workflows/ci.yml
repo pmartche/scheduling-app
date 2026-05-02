@@ -42,15 +42,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      - run: |
-          echo "CI HEAD: $(git rev-parse HEAD)"
-          echo "Git status:"
-          git status --short
-          echo "Lockfile npm summary:"
-          grep -n '"version": "3\.6\.0"\|"version": "4\.0\.3"' package-lock.json | head -20 || true
-          node --version
-          npm --version
-
       - run: npm ci
 
       - run: npx prisma generate --schema api-gateway/prisma/schema.prisma
