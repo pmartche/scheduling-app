@@ -1,8 +1,8 @@
 import { ArgumentsHost, HttpStatus } from '@nestjs/common';
 import { PrismaExceptionFilter } from './prisma-exception.filter';
 import { FOREIGN_KEY_CONSTRAINT_VIOLATION } from '@scheduling-app/shared-config';
-import { Prisma } from '@prisma/client';
 import { mapPrismaErrorToResponse } from './filter-helper-functions';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 jest.mock('./filter-helper-functions');
 
@@ -16,7 +16,7 @@ describe('PrismaExceptionFilter', () => {
 
     const exception = {
       code: prismaErrorCode,
-    } as Prisma.PrismaClientKnownRequestError;
+    } as PrismaClientKnownRequestError;
 
     const responseObject = {
       status: jest.fn().mockReturnThis(),
