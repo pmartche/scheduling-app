@@ -1,5 +1,5 @@
 {
-  "name": "@fullstack/shared-auth",
+  "name": "@scheduling-app/shared-auth",
   "version": "0.0.1",
   "private": true,
   "type": "module",

@@ -41,7 +41,7 @@ describe('BusinessService', () => {
       expect(await service.createBusiness(newBusiness)).toEqual(result);
 
       expect(prismaService.business.create).toHaveBeenCalledWith(
-        prismaCreationObject
+        prismaCreationObject,
       );
 
       expect(prismaService.business.create).toHaveBeenCalledTimes(1);
@@ -75,7 +75,7 @@ describe('BusinessService', () => {
       expect(await service.addLocation(newLocation)).toEqual(result);
 
       expect(prismaService.location.create).toHaveBeenCalledWith(
-        prismaCreationObject
+        prismaCreationObject,
       );
 
       expect(prismaService.location.create).toHaveBeenCalledTimes(1);

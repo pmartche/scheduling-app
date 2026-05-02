@@ -9,7 +9,7 @@ datasource db {
 
 model Business {
   id        String     @id @default(uuid())
-  name      String     @unique
+  name      String     @unique @db.VarChar(20)
   locations Location[]
 }
 
@@ -17,12 +17,12 @@ model Location {
   id                  String               @id @default(uuid())
   businessId          String
   business            Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  name                String
+  name                String               @db.VarChar(20)
   email               String
-  address             String
-  city                String
-  postalCode          String
-  country             String
+  address             String               @db.VarChar(60)
+  city                String               @db.VarChar(50)
+  postalCode          String               @db.VarChar(20)
+  country             String               @db.VarChar(50)
   locationMemberships LocationMembership[]
 
   @@unique([businessId, name])
@@ -30,8 +30,8 @@ model Location {
 
 model Customer {
   id                  String               @id @default(uuid())
-  firstName           String
-  lastName            String
+  firstName           String               @db.VarChar(20)
+  lastName            String               @db.VarChar(30)
   email               String               @unique
   locationMemberships LocationMembership[]
 }
