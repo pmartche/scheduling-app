@@ -29,7 +29,7 @@ export class BusinessController {
   @Put(':id')
   updateLocation(
     @Param('id') id: string,
-    @Body() updateBusinessDto: UpdateBusinessDto
+    @Body() updateBusinessDto: UpdateBusinessDto,
   ) {
     if (id !== updateBusinessDto.id)
       throw new BadRequestException(ROUTE_BODY_ID_MISMATCH);
