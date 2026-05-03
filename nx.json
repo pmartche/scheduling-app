@@ -60,7 +60,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["api-gateway-e2e/**/*", "api-gateway-e2e/**/*"]
+      "exclude": ["api-gateway-e2e/**/*"]
     },
     {
       "plugin": "@nx/webpack/plugin",
@@ -96,5 +96,5 @@
       }
     }
   },
-  "nxCloudId": "69dacd76afa3fc0a7f2fca67"
+  "nxCloudId": "69f696459af4c670fd00aedf"
 }

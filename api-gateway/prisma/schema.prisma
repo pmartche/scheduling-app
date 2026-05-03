@@ -7,15 +7,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      String   @default("user")
-  createdAt DateTime @default(now())
+model Business {
+  id        String     @id @default(uuid())
+  name      String     @unique @db.VarChar(20)
+  locations Location[]
 }
 
-enum Role {
-  USER
-  ADMIN
+model Location {
+  id                  String               @id @default(uuid())
+  businessId          String
+  business            Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name                String               @db.VarChar(20)
+  email               String
+  address             String               @db.VarChar(60)
+  city                String               @db.VarChar(50)
+  postalCode          String               @db.VarChar(20)
+  country             String               @db.VarChar(50)
+  locationMemberships LocationMembership[]
+
+  @@unique([businessId, name])
+}
+
+model Customer {
+  id                  String               @id @default(uuid())
+  firstName           String               @db.VarChar(20)
+  lastName            String               @db.VarChar(30)
+  email               String               @unique
+  locationMemberships LocationMembership[]
+}
+
+model LocationMembership {
+  id           String        @id @default(uuid())
+  locationId   String
+  location     Location      @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  customerId   String
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+}
+
+model Appointment {
+  id                   String             @id @default(uuid())
+  locationMembershipId String
+  locationMembership   LocationMembership @relation(fields: [locationMembershipId], references: [id], onDelete: Cascade)
+  startTime            DateTime
+  endTime              DateTime
 }

@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+node ./tools/hooks/check-prisma-sync.js || exit 1
+
+npx lint-staged || exit 1
+
+FILES=$(git diff --cached --name-only --diff-filter=ACMR | tr '\n' ',' | sed 's/,$//')
+
+if [ -n "$FILES" ]; then
+  npx nx affected --files="$FILES" -t test build typecheck || exit 1
+fi
