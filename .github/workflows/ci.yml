@@ -48,7 +48,9 @@ jobs:
       - run: npx prisma migrate deploy --schema api-gateway/prisma/schema.prisma
 
       - run: npx nx format:check --base="remotes/origin/main"
-      - run: npx nx run-many -t lint test build typecheck --all
+      - run: npx nx run-many -t lint test typecheck --all
+      - run: rm -rf api-gateway/dist web/dist libs/*/dist
+      - run: npx nx run-many -t build --all
 
       - run: npx playwright install --with-deps
       - run: npx nx e2e api-gateway-e2e
