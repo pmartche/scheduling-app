@@ -1,0 +1,78 @@
+#!/usr/bin/env sh
+
+set -eu
+
+BRANCH_NAME="${1:-}"
+
+if [ -z "$BRANCH_NAME" ]; then
+  echo "Usage: git nb <new-branch-name>"
+  exit 1
+fi
+
+CURRENT_BRANCH=$(git branch --show-current)
+
+if [ -z "$CURRENT_BRANCH" ]; then
+  echo "You are in detached HEAD state."
+  echo "Creating a branch from detached HEAD is allowed, but unusual."
+  printf "Proceed anyway? [y/N]: "
+  read answer
+
+  case "$answer" in
+    y|Y|yes|YES) ;;
+    *) echo "Aborted."; exit 1 ;;
+  esac
+
+  git checkout -b "$BRANCH_NAME"
+  exit 0
+fi
+
+git fetch --all --prune || exit 1
+
+UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || true)
+
+if [ -z "$UPSTREAM" ]; then
+  echo ""
+  echo "Warning: current branch '$CURRENT_BRANCH' has no upstream tracking branch."
+  echo ""
+  echo "That means I cannot verify whether it is up to date with a remote branch."
+  echo ""
+
+  printf "Proceed with creating '$BRANCH_NAME' from '$CURRENT_BRANCH' anyway? [y/N]: "
+  read answer
+
+  case "$answer" in
+    y|Y|yes|YES) ;;
+    *) echo "Aborted."; exit 1 ;;
+  esac
+
+  git checkout -b "$BRANCH_NAME"
+  exit 0
+fi
+
+if ! git merge-base --is-ancestor "$UPSTREAM" HEAD; then
+  echo ""
+  echo "Warning: your current source branch is not up to date with its upstream."
+  echo ""
+  echo "Current branch: $CURRENT_BRANCH"
+  echo "Upstream:       $UPSTREAM"
+  echo "New branch:     $BRANCH_NAME"
+  echo ""
+  echo "This means '$CURRENT_BRANCH' does not contain the latest commit from '$UPSTREAM'."
+  echo ""
+  echo "You probably want to update the source branch first:"
+  echo ""
+  echo "  git checkout $CURRENT_BRANCH"
+  echo "  git pull --ff-only"
+  echo "  git checkout -b $BRANCH_NAME"
+  echo ""
+
+  printf "Proceed with creating '$BRANCH_NAME' from the stale source branch anyway? [y/N]: "
+  read answer
+
+  case "$answer" in
+    y|Y|yes|YES) ;;
+    *) echo "Aborted."; exit 1 ;;
+  esac
+fi
+
+git checkout -b "$BRANCH_NAME"
