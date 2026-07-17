@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   AddLocationDto,
@@ -8,25 +8,72 @@ import {
 
 @Injectable()
 export class BusinessService {
-  constructor(private prismaService: PrismaService) {}
+  private readonly logger = new Logger(BusinessService.name);
 
-  getData(): { message: string } {
-    return { message: 'Hello API' };
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async getBusinesses() {
+    const result = await this.prismaService.business.findMany();
+
+    this.logger.log(
+      { event: 'business.requestedAll', businessCount: result.length },
+      'Businesses retrieved',
+    );
+
+    return result;
   }
 
-  createBusiness(business: CreateBusinessDto) {
-    return this.prismaService.business.create({ data: business });
+  async getBusinessById(id: string) {
+    const result = await this.prismaService.business.findUniqueOrThrow({
+      where: { id },
+    });
+
+    this.logger.log(
+      { event: 'business.requested', businessId: result.id },
+      'Business retrieved',
+    );
+
+    return result;
   }
 
-  addLocation(location: AddLocationDto) {
-    return this.prismaService.location.create({ data: location });
+  async createBusiness(business: CreateBusinessDto) {
+    const result = await this.prismaService.business.create({ data: business });
+
+    this.logger.log(
+      { event: 'business.created', businessId: result.id },
+      'Business created',
+    );
+
+    return result;
   }
 
-  updateBusiness(business: UpdateBusinessDto) {
+  async addLocation(location: AddLocationDto) {
+    const result = await this.prismaService.location.create({ data: location });
+
+    this.logger.log(
+      {
+        event: 'location.created',
+        locationId: result.id,
+        businessId: result.businessId,
+      },
+      'Location created',
+    );
+
+    return result;
+  }
+
+  async updateBusiness(business: UpdateBusinessDto) {
     const { id, ...data } = business;
-    return this.prismaService.business.update({
+    const result = await this.prismaService.business.update({
       where: { id },
       data,
     });
+
+    this.logger.log(
+      { event: 'business.updated', businessId: id },
+      'Business updated',
+    );
+
+    return result;
   }
 }
