@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { BusinessService } from './business.service';
 import { BusinessController } from '../controller/business.controller';
 import { PrismaService } from '../../prisma/prisma.service';
-import { AddLocationDto } from '../dto/add-location.dto';
+import { AddLocationDto } from '@scheduling-app/shared-schemas';
 
 describe('BusinessService', () => {
   let service: BusinessService;

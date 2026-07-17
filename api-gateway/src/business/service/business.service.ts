@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBusinessDto } from '../dto/create-business.dto';
 import { PrismaService } from '../../prisma/prisma.service';
-import { AddLocationDto } from '../dto/add-location.dto';
-import { UpdateBusinessDto } from '../dto/update-business.dto';
+import {
+  AddLocationDto,
+  CreateBusinessDto,
+  UpdateBusinessDto,
+} from '@scheduling-app/shared-schemas';
 
 @Injectable()
 export class BusinessService {

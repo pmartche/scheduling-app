@@ -9,6 +9,7 @@ import {
   INTERNAL_SERVER_ERROR,
   PrismaDerivedError,
 } from '@scheduling-app/shared-config';
+import { FieldErrors } from '@scheduling-app/shared-types';
 
 type FilterResponse = { statusCode: HttpStatus; errorType: PrismaDerivedError };
 
@@ -45,3 +46,12 @@ export function mapPrismaErrorToResponse(
 
   return { statusCode, errorType };
 }
+
+export const isFieldErrors = (value: unknown): value is FieldErrors =>
+  isObject(value) && Object.values(value).every(isStringArray);
+
+export const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === 'string');
+
+export const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
