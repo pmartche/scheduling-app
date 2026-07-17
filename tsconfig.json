@@ -27,6 +27,9 @@
     },
     {
       "path": "./libs/shared-types"
+    },
+    {
+      "path": "./libs/shared-schemas"
     }
   ]
 }
