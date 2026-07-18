@@ -6,60 +6,21 @@ import { AppService } from './service/app.service';
 import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter';
 import { APP_FILTER } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
+import { createPinoHttpOptions } from '../common/logging/pino-http.config';
+import { GlobalExceptionFilter } from '../common/filters/global-exception.filter';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
     LoggerModule.forRoot({
-      pinoHttp: {
-        name: 'api-gateway',
-        level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-
-        customLogLevel: (_request, response, error) => {
-          if (response.statusCode >= 500) {
-            return 'error';
-          }
-
-          if (response.statusCode >= 400) {
-            return 'warn';
-          }
-
-          if (error) {
-            return 'error';
-          }
-
-          return 'info';
-        },
-
-        transport:
-          process.env.NODE_ENV === 'production'
-            ? undefined
-            : {
-                target: 'pino-pretty',
-                options: {
-                  colorize: true,
-                  singleLine: true,
-                  translateTime: 'SYS:standard',
-                },
-              },
-
-        redact: {
-          paths: [
-            'req.headers.authorization',
-            'req.headers.cookie',
-            'res.headers.set-cookie',
-            'req.body.password',
-            'req.body.refreshToken',
-          ],
-          censor: '[REDACTED]',
-        },
-      },
+      pinoHttp: createPinoHttpOptions(),
     }),
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    { provide: APP_FILTER, useClass: GlobalExceptionFilter },
     { provide: APP_FILTER, useClass: PrismaExceptionFilter },
   ],
 })
