@@ -16,6 +16,22 @@ import { LoggerModule } from 'nestjs-pino';
         name: 'api-gateway',
         level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
 
+        customLogLevel: (_request, response, error) => {
+          if (response.statusCode >= 500) {
+            return 'error';
+          }
+
+          if (response.statusCode >= 400) {
+            return 'warn';
+          }
+
+          if (error) {
+            return 'error';
+          }
+
+          return 'info';
+        },
+
         transport:
           process.env.NODE_ENV === 'production'
             ? undefined
