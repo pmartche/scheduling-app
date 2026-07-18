@@ -21,6 +21,9 @@ import request from 'supertest';
 import { GlobalExceptionFilter } from '../filters/global-exception.filter';
 import { createPinoHttpOptions } from './pino-http.config';
 
+const RESPONSE_COOKIE = 'session=response-cookie-secret';
+const UNEXPECTED_ERROR_MESSAGE = 'Unexpected logging test error';
+
 type LogRecord = {
   level: number;
   msg?: string;
@@ -64,7 +67,7 @@ class LoggingTestController {
 
   @Get('success')
   success(@Res({ passthrough: true }) response: Response) {
-    response.setHeader('Set-Cookie', 'session=response-cookie-secret');
+    response.setHeader('Set-Cookie', RESPONSE_COOKIE);
 
     return this.service.execute();
   }
@@ -78,7 +81,7 @@ class LoggingTestController {
 
   @Get('error')
   error(): never {
-    throw new Error('Unexpected logging test error');
+    throw new Error(UNEXPECTED_ERROR_MESSAGE);
   }
 }
 
@@ -132,6 +135,7 @@ describe('structured logging integration', () => {
     app.setGlobalPrefix('api');
 
     await app.init();
+
     logChunks.length = 0;
   });
 
@@ -145,13 +149,13 @@ describe('structured logging integration', () => {
 
   it('logs a successful response once and correlates the service log', async () => {
     const url = '/api/logging-test/success';
-    const authorization = 'Bearer auth';
-    const cookie = 'session=response-cookie-secret';
+    const authorization = 'Bearer authorization-secret';
+    const requestCookie = 'session=request-cookie-secret';
 
     await request(app.getHttpServer())
       .get(url)
       .set('Authorization', authorization)
-      .set('Cookie', cookie)
+      .set('Cookie', requestCookie)
       .expect(200, { success: true });
 
     await waitForLogs();
@@ -182,16 +186,19 @@ describe('structured logging integration', () => {
       event: 'logging.test_completed',
       msg: 'Logging test completed',
     });
+
+    expect(responseLogs[0].req?.id).toEqual(expect.anything());
     expect(serviceLog?.req?.id).toBe(responseLogs[0].req?.id);
+
     expect(responseLogs[0].req?.headers?.authorization).toBe('[REDACTED]');
     expect(responseLogs[0].req?.headers?.cookie).toBe('[REDACTED]');
     expect(responseLogs[0].res?.headers?.['set-cookie']).toBe('[REDACTED]');
 
     const serializedLogs = JSON.stringify(logs);
 
-    expect(serializedLogs).not.toContain(authorization);
-    expect(serializedLogs).not.toContain(cookie);
-    expect(serializedLogs).not.toContain('response-cookie-secret');
+    for (const secret of [authorization, requestCookie, RESPONSE_COOKIE]) {
+      expect(serializedLogs).not.toContain(secret);
+    }
   });
 
   it('logs a client error at warn level with the original exception', async () => {
@@ -225,7 +232,7 @@ describe('structured logging integration', () => {
     expect(responseLogs[0].err?.stack).toEqual(expect.any(String));
   });
 
-  it('logs an unexpected error at error level with its stack trace', async () => {
+  it('logs an unexpected error once at error level with its stack trace', async () => {
     const url = '/api/logging-test/error';
 
     const response = await request(app.getHttpServer()).get(url).expect(500);
@@ -237,9 +244,15 @@ describe('structured logging integration', () => {
       errorType: INTERNAL_SERVER_ERROR,
     });
 
-    const responseLogs = responseLogsFor(url);
+    const logs = readLogs();
+    const responseLogs = logs.filter((log) => log.req?.url === url && log.res);
+    const logsContainingError = logs.filter((log) =>
+      JSON.stringify(log).includes(UNEXPECTED_ERROR_MESSAGE),
+    );
 
     expect(responseLogs).toHaveLength(1);
+    expect(logsContainingError).toHaveLength(1);
+
     expect(responseLogs[0]).toMatchObject({
       level: 50,
       req: {
@@ -251,11 +264,9 @@ describe('structured logging integration', () => {
       },
       err: {
         type: 'Error',
-        message: 'Unexpected logging test error',
+        message: UNEXPECTED_ERROR_MESSAGE,
       },
     });
-    expect(responseLogs[0].err?.stack).toContain(
-      'Unexpected logging test error',
-    );
+    expect(responseLogs[0].err?.stack).toContain(UNEXPECTED_ERROR_MESSAGE);
   });
 });
