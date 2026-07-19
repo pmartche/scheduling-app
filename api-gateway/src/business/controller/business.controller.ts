@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   ParseUUIDPipe,
   Post,
@@ -21,6 +22,16 @@ import { ROUTE_BODY_AND_ID_MISMATCH } from '@scheduling-app/shared-config';
 @Controller('business')
 export class BusinessController {
   constructor(private readonly businessService: BusinessService) {}
+
+  @Get()
+  getBusinesses() {
+    return this.businessService.getBusinesses();
+  }
+
+  @Get(':id')
+  getBusinessById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.businessService.getBusinessById(id);
+  }
 
   @Post()
   addBusiness(
