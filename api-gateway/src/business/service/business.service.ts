@@ -4,6 +4,7 @@ import {
   AddLocationDto,
   CreateBusinessDto,
   UpdateBusinessDto,
+  UpdateLocationDto,
 } from '@scheduling-app/shared-schemas';
 
 @Injectable()
@@ -72,6 +73,21 @@ export class BusinessService {
     this.logger.log(
       { event: 'business.updated', businessId: id },
       'Business updated',
+    );
+
+    return result;
+  }
+
+  async updateLocation(location: UpdateLocationDto) {
+    const { id, ...data } = location;
+    const result = await this.prismaService.location.update({
+      where: { id },
+      data,
+    });
+
+    this.logger.log(
+      { event: 'location.updated', locationId: id },
+      'Location updated',
     );
 
     return result;

@@ -12,9 +12,12 @@ import { BusinessService } from '../service/business.service';
 import {
   addLocationSchema,
   createBusinessSchema,
+  updateBusinessSchema,
+  updateLocationSchema,
   type AddLocationDto,
   type CreateBusinessDto,
   type UpdateBusinessDto,
+  type UpdateLocationDto,
 } from '@scheduling-app/shared-schemas';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { ROUTE_BODY_AND_ID_MISMATCH } from '@scheduling-app/shared-config';
@@ -41,6 +44,18 @@ export class BusinessController {
     return this.businessService.createBusiness(createBusinessDto);
   }
 
+  @Put(':id')
+  updateBusiness(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(new ZodValidationPipe(updateBusinessSchema))
+    updateBusinessDto: UpdateBusinessDto,
+  ) {
+    if (id !== updateBusinessDto.id)
+      throw new BadRequestException(ROUTE_BODY_AND_ID_MISMATCH);
+
+    return this.businessService.updateBusiness(updateBusinessDto);
+  }
+
   @Post()
   addLocation(
     @Body(new ZodValidationPipe(addLocationSchema))
@@ -52,11 +67,12 @@ export class BusinessController {
   @Put(':id')
   updateLocation(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateBusinessDto: UpdateBusinessDto,
+    @Body(new ZodValidationPipe(updateLocationSchema))
+    updateLocationDto: UpdateLocationDto,
   ) {
-    if (id !== updateBusinessDto.id)
+    if (id !== updateLocationDto.id)
       throw new BadRequestException(ROUTE_BODY_AND_ID_MISMATCH);
 
-    return this.businessService.updateBusiness(updateBusinessDto);
+    return this.businessService.updateLocation(updateLocationDto);
   }
 }

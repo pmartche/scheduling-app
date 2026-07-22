@@ -30,3 +30,18 @@ export const addLocationSchema = z
   .required();
 
 export type AddLocationDto = z.infer<typeof addLocationSchema>;
+
+export const updateLocationSchema = z
+  .object({
+    id: z.uuid(),
+    businessId: z.uuid(),
+    name: z.string().trim(),
+    email: z.email(),
+    address: z.string().trim(),
+    city: z.string().trim(),
+    postalCode: z.string().trim(),
+    country: z.string().trim(),
+  })
+  .required();
+
+export type UpdateLocationDto = z.infer<typeof updateLocationSchema>;
